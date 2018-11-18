@@ -11,7 +11,6 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * A Hierarchy of Nodes
     * Node Properties
     * Determining Node Type
-    * Inheritance
     * Documentation
     * Node Traversal
     * Element Attributes
