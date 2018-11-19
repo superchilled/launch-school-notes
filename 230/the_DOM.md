@@ -130,20 +130,217 @@ p instanceof Element; // true
 p.tagName; // 'P'
 ```
 
-<a name="documentation"></a>
-## Documentation
-
 <a name="node-traversal"></a>
 ## Node Traversal
+
+  * DOM nodes connect with other DOM nodes via a set of properties that point from one node to another with defined relationships.
+  * All element nodes have parent properties, e.g:
+    * `childNodes`: returns a *live collection* of all child nodes (a live collection automatically updates to reflect changes in the DOM)
+    * `firstChild`: returns `childNodes[0]` or `null`
+    * `lastChild`: returns `childNodes[childNodes.length - 1]` or `null`
+  * All element nodes also have child properties:
+    * `parentNode`: Immediate parent of the node
+    * `nextSibling`: `parentNode.childNodes[n + 1]` or `null`
+    * `previousSibling`: `parentNode.childNodes[n - 1]` or `null`
+  * Whether these properties have an actual value or are `null` depends on the structure of the DOM tree; (e.g. a child node that is the last sibling in a collection of nodes will have `null` for `nextSibling`)
+
+### Walking the Tree
+
+  * 'Walking the Tree' is a term that describes the process of visiting every node that has a child, grandchild, etc relationship with a given node, and doing something with each of them.
+  * Walking the tree is carried out using a **recursive** function.
+
+**Example**
+
+```
+// walk() calls the function "callback" once for each node
+function walk(node, callback) {
+  callback(node);                                // do something with node
+  var i;                                   
+  for (i = 0; i < node.childNodes.length; i++) { // for each child node
+    walk(node.childNodes[i], callback);          // recursively call walk()
+  }
+}
+
+walk(document.body, function(node) {             // log nodeName of every node
+  console.log(node.nodeName);
+});
+```
 
 <a name="element-attributes"></a>
 ## Element Attributes
 
+  * HTML elements have *attributes*, such as `class`, `id`, `href`, etc..
+  * When interacting with DOM element nodes, we can *get* or *set* these attributes on the element in the DOM.
+  * All DOM element nodes can use the following methods to work with attributes:
+    * `hasAttribute('name')`: checks to see if an element has an attribute (e.g. 'name'); returns `true` or `false`
+    * `getAttribute('name')`: retrieves the value of an attribute (e.g. 'name'); returns the value of the attribute as a string
+    * `setAttribute('name', 'new-value')`: sets the value of an attribute (e.g. 'name') to the value provided byt he second argument; returns `undefined`
+
+**Example**
+
+```
+p.hasAttribute('class'); // true
+p.getAttribute('class'); // 'intro'
+p.setAttribute('class', 'primary'); // undefined
+p; // <p class="primary">...</p>
+```
+
+### Attribute Properties
+
+  * Certain attributes on certain types of DOM element node can be interacted with via a property name such as `id`, `name`, `title`, `value`, e.g. using dot notation
+  * Not every Element type has these properties, but most have at least the `id` and `className` properties
+    * `className` is used as the property name rather than `class` because `class` is a reserved word in JavaScript
+
+**Example**
+
+```
+p.className; // 'primary'
+p.className = 'secondary'; // undefined
+p; // <p class="secondary">...</p>
+```
+
+### `classList`
+
+  * Working with the `class` attribute via `getAttribute`, `setAttribute`, or `className` can be inconvenient because elements can quite often have more than one class.
+  * Since classes are space-separated within the attribute value, checking for the existence of a particular class, removing or changing a class can be tricky.
+  * Most modern browsers provide a better way to work with the `class` arttribute, via the `classList` property
+    * `classList` references a special array-like `DOMTokenList` object, with some useful properties and methods:
+      * `add('name')`: adds class `'name'` to the class attribute
+      * `remove('name')`: removes class `'name'` from the class attribute
+      * `toggle('name')`: Adds class `'name'` if it doesn't exist, or removes it if it does
+      * `contains('name')`: returns `true` or `false` depending on whether the class attribute contains the class `'name'`
+      * `length`: returns the number of classes within the `class` attribute
+
+**Example**
+
+```
+p.classList.add('visible');
+p; // <p class="secondary visible">...</p>
+p.classList.contains('visible'); // true
+p.classList.remove('secondary');
+p.classList.contains('secondary'); // false
+p; // <p class="visible">...</p>
+```
+
+### `style`
+
+  * DOM Element nodes also have a `style` property which references as `CSSStyleDeclaration` object.
+  * You can use the style property to alter any CSS property for the DOM Element
+  * CSS properties are manipulated using the CSS property name. Hyphenated names are camel-cased
+  * To remove a CSS property it can be set to `null`
+
+**Example**
+
+```
+var h1 = document.querySelector('h1');
+h1.style.color = 'red';
+h1.style.lineHeight = '3em';
+h1.style.color = null;
+```
+
+  * It's generally considered better practice to define styles in a stylesheet and apply them to an element by adding or removing classes
+
 <a name="finding-nodes"></a>
 ## Finding DOM Nodes
 
+  * In HTML/JavaScript applications we often need to find a DOM element based on the value of its `id` attribute
+    * We can use the `getElementById` method of `document` to do this. Since `id` values in a document should be unique, we can target specific elements by their `id`
+  * If we want to find multiple elements that meet some criteria, we can use a couple of other methods:
+    * `document.getElementsByTagName(tagName)`: returns an `HTMLCollection` or `NodeList` of matching elements; e.g. a `tagName` of `'P'` would return all paragraph elements
+    * `document.getElementsByClassName(className)`: returns an `HTMLCollection` or `NodeList` of matching elements; e.g. a `className` of `'orange'` would return all elements that had a `class` or `'orange'`
+
+### `HTMLCollection` and `NodeList`
+
+  * `HTMLCollection` and `NodeList` are both index-based array-like objects containing DOM nodes
+  * Since they are not JavaScript arrays, they don't supprt `Array` methods such as `forEach()` (though on some browsers, `NodeList` does support `forEach()`)
+  * When using `document.getElementsByTagName()`, some browsers will return a `HTMLCollection` object, and some (WebKit) will return a `NodeList`
+    * There are some differences between the two object types (e.g. `HTMLCollection` is supposed to only contain Element nodes, whereas `NodeList` can contain any type of node), but you can use them in broadly the same way
+    * Other methods, such as `document.getElementsByClassName()` always return an `HTMLCollection` , regardless of browser
+    * `HTMLCollection` is a *live collections*, meaning that it automatically reflects any changes in the DOM.
+      * For example, if you call `document.getElementsByTagName('P')` to return all paragraph elements, then add a new paragraph element to the DOM, the object returned by `getElementsByTagName()` will now contain the new paragraph
+    * `NodeList` is live in some cases, but static others; e.g. `Node.childNodes` and `getElementsByTagName()` return live collections, `document.querySelectorAll()` returns a static `NodeList`
+
+### Using CSS Selectors
+
+  * Modern browsers support an easier way of finding DOM Nodes, using methods which identify nodes via CSS selectors:
+    * `document.querySelector(selector)`: returns the first matching element, or `null` if no match
+    * `document.querySelectorAll(selector)`: returns a *static* `NodeList` of matching elements
+  * Some older browsers, e.g. versions of IE older than IE9, don't support these methods
+  * Since specific selector combinations can be used, these methods are very flexible
+
+**Example**
+
+```
+document.querySelectorAll('p'); // gets all paragraph elements
+document.querySelectorAll('.intro'); // gets all elements with a class of intro
+document.querySelectorAll('.intro p'); // gets all paragraph elements nested inside an
+// element with a class of 'intro'
+```
+
+### Sources
+
+  * https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById
+  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCollection
+  * https://developer.mozilla.org/en-US/docs/Web/API/NodeList
+  * https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName
+  * https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName
+
 <a name="traversing-elements]"></a>
 ## Traversing Elements
+
+  * When traversing elements, using properties such as `nextSibling` and `previousSibling` may not necessarily be the most appropriate, since the sibling of an element could be a text node or a comment node.
+  * If you want to work with *just* element nodes, there is another set of DOM node properties that can be used for traversal:
+    * Parent Element properties:
+      * `children`: returns a *live collection* of all child element nodes
+      * `firstElementChild`: returns `children[0]` or `null`
+      * `lastElementChild`: returns `children[children.length - 1]` or `null`
+      * `childElementCount`: returns `children.length`
+    * Child Element properties:
+      * `nextElementSibling`: returns `parentNode.children[n + 1]` or `null`
+      * `prevElementSibling`: returns `parentNode.children[n - 1]` or `null`
+
+### Text Content
+
+  * When working with properties that target Element nodes, you can still interact with the text content of those nodes via the `textContent` property
+
+**Example**
+
+```
+<a href='subscribe.html'>Subscribe</a>
+```
+
+```
+document.querySelector('a').textContent; // 'Subscribe'
+document.querySelector('a').textContent = 'Subscribe now!!!';
+```
+
+```
+<a href='subscribe.html'>Subscribe now!!!</a>
+```
+
+  * Something to be aware of when setting `textContent` is that is removes all child nodes from the element and replaces them with the text that contains the value.
+
+**Example**
+
+```
+<a href='subscribe.html'><span class="cta-text">Subscribe</span></a>
+```
+
+```
+document.querySelector('a').textContent = 'Subscribe now!!!';
+```
+
+```
+<a href='subscribe.html'>Subscribe now!!!</a>
+```
+
+  * We could have instead targetted the span element:
+
+**Example**
+
+```
+document.querySelector('a span').textContent = 'Subscribe now!!!';
+```
 
 <a name="creating-moving-nodes"></a>
 ## Creating and Moving DOM Nodes
