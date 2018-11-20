@@ -20,7 +20,17 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * The Browser Object Model (BOM)
 
   * [Event-Driven and Asynchronous Programming](event_driven_and_async_programming.md)
-    *
+    * Asynchronous Execution
+    * Repeating Execution
+    * User Interfaces and Events
+    * Page Lifecycle Events
+    * User Events
+    * Adding Event Listeners
+    * The Event Object
+    * Capturing and Bubbling
+    * Preventing Propagation and Default Behaviors
+    * Event Delegation
+    * The Event Loop
 
   * [jQuery](jQuery.md)
     *
