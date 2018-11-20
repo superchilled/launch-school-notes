@@ -345,5 +345,49 @@ document.querySelector('a span').textContent = 'Subscribe now!!!';
 <a name="creating-moving-nodes"></a>
 ## Creating and Moving DOM Nodes
 
+  * As well as manipulating the DOM to modify existing nodes, it is also possible to create, add, and remove nodes.
+
+### Creating New Nodes
+
+  * This can be done in two ways:
+    * Creating a new empty node with the `document.create*` methods:
+      * `document.createElement(tagName)`: this creates a new element node; e.g. if `tagName` is `'P'`, a new paragraph element is created
+      * `document.createTextNode(text)`: this creates a new text node containing whatever text is supplied as a string argument to the `text` paraemter
+    * Cloning an existing node using  `node.cloneNode(deepClone)`. The `cloneNode` method is called on an existing node and returns a cloned version of the node. `deepCLone` should be a boolean, if `true` then `cloneNode()` copies `node` and all of its children, if `false` it merely copies `node`.
+      * When cloning a node, the resulting DOM objects that represent them are independent of each other -- changing one does not change the other.
+
+### Adding Nodes to the DOM
+
+  * You can append, insert, or replace nodes by calling a method on a parent node.
+    * `parent.appendChild(node)`: appends `node` aat the *end* of `parent.childNodes`
+    * `parent.insertBefore(node, targetNode)`: inserts `node` into `parent.childNodes` *before* `targetNode` (i.e. `node` becomes the `previousSibling` of `targetNode`).
+    * `parent.replaceChild(node, targetNode)`: removes `targetNode` from `parent.childNodes` amd inserts `node` in its place.
+  * Note 1: `docuemnt.appendChild` causes an error; use `document.body.appendChild` instead.
+  * Note 2: No node may appear twice in the DOM. If you try to add a node that already exists, it gets removed from the original location. This fact can be leveraged as a useful method of *moving* existing nodes by inserting it where you want.
+
+  * There are some additional methods that are useful for DOM node insertion, where you want to insert a node in a position adjacent to an existing node rather than as a child of a parent node:
+    * `element.insertAdjacentElement(position, newElement)`: inserts `newElement` at `position` relative to `element`
+    * `element.insertAdjacentText(position, text)`: inserts a Text node containing `text` at `position` relative to `element`
+    * For both of these methods, `position` must be one of the following String values:
+      * `'beforebegin'`: inserts node *before* `element`
+      * `'afterbegin'`: inserts node before the *first child* of `element`
+      * `'beforeend'`: inserts node after the *last child* of `element`
+      * `'afterend'`: inserts node *after* the element
+
+### Removing Nodes
+
+  * When you remove a node from the DOM it becomes elegible for garbage collection unless you keep a reference to it in a variable.
+  * There are a couple of methods which are commonly used to remove nodes from the DOM:
+    * `node.remove()`: removes `node` from the DOM
+    * `parent.removeChild(node)`: removes `node` from `parent.childNodes`
+
 <a name="bom"></a>
 ## The Browser Object Model (BOM)
+
+  * The DOM (Document Object Model) reperesents the *document* that is displayed in the browser.
+  * It is possible to access other components of the browser environment (beyond the displayed document) using JavaScript.
+  * These components are not part of the DOM, but are instead part of the BOM (Browser Object Model).
+  * The BOM includes the DOM, but also includes things like:
+    * The browser window
+    * The browser's history
+    * Sensors, such as location sensors
