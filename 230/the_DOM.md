@@ -39,7 +39,7 @@
 <a name="node-hierarchy"></a>
 ## A Hierarchy of Nodes
 
-  * The DOM is a hierarchical tree structure of 'nodes' (imagine each 'branch' of the tree ending in a node):
+  * The DOM is a hierarchical tree structure of 'nodes'. Each node can contain any number of child nodes. Imagine each 'branch' of the tree ending in a node:
     * Element nodes represent HTML tags, e.g. `HTML`, `HEAD`, `DIV`, `H1`, `P`, etc.
     * Text nodes represent text that appears in the document
     * Comment nodes represent HTML comments
