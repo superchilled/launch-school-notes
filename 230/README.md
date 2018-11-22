@@ -23,7 +23,7 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * Asynchronous Execution
     * Repeating Execution
     * User Interfaces and Events
-    * Page Lifecycle Events
+    * The Page Lifecycle
     * User Events
     * Adding Event Listeners
     * The Event Object
