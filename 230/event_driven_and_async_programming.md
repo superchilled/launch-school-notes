@@ -417,9 +417,17 @@ document.addEventListener('click', function(event) {
   * The Event Loop is one part of JavaScript's concurrency model
   * The JavaScript run-time is *single-threaded*, which basically means it can do one thing at a time.
     * When a function is invoked, it gets added to the call-stack, and when it returns is removed (function calls are added and removed in a LIFO order)
+  * When performing asynchronous operations (e.g. when making async requests or responding to events), in order to avoid blocking the call-stack, JavaScript uses a combination of Web APIs, the Message Queue (sometimes known as the Event Queue, or Event Loop Queue), and the Event Loop to manage these operations in a resource-efficient manner
+    * JavaScript runtimes contain a Message Queue, which stores a list of messages to be processed along with their associated callback functions. Messages can be queued here while the the call-stack processes synchronous requests, then when the call-stack is empty the Message Queue gets polled for messages. Items are added to the Message Queue in FIFO order
+    * Messages can be queued in response to external events, such as an event listener responding to a user event (e.g. a mouse click), a response to an XHR request, or a `setTimeout` period elapsing. Generally these messages are the result of some method or function that is part of an external API (i.e. not part of the JavaScript runtime)
+    * The Event Loop 'ticks' constantly (something like a clock), on each tick it checks if the call-stack is empty, if so then the Message Queue is polled for the next message. When the Event Loop encounters a message on the Message Queue, the message is dequeued and the callback function for that message is added to the call-stack and executed.
+
+![Event Loop Image](img/event-loop.png)
 
 ### Sources
 
   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
   * https://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained/
+  * https://hackernoon.com/understanding-js-the-event-loop-959beae3ac40
   * https://www.youtube.com/watch?v=8aGhZQkoFbQ
+  * https://developer.mozilla.org/en-US/docs/Web/API
