@@ -32,11 +32,19 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * Event Delegation
     * The Event Loop
 
+  * [Making HTTP Requests from JavaScript](making_HTTP_requests_from_JS.md)
+    * Web APIs
+    * Network Programing in JavaScript
+    * Making Requests with XMLHttpRequest
+    * XMLHttpRequest Events
+    * Data Serialization
+    * Usage Examples
+    * Cross-Domain XMLHttpRequest with CORS
+
   * [jQuery](jQuery.md)
     *
 
-  * [Making HTTP Requests from JavaScript](making_HTTP_requests_from_JS.md)
-    *
+
 
   * [New JavaScript Features](new_JS_features.md)
     *
