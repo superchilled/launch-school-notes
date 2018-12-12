@@ -65,8 +65,135 @@
 
 ### Media Types
 
-  * The internet has a number of shared markup languages and data formats for transferrig information between computers or systems.
-  * 
+  * The internet has a number of shared markup languages and data formats for transferring information between computers or systems. One example is HTML, used to create all web pages.
+  * HTML is one of many different **media types**, also called **content types** or **MIME types**, supported by modern web browsers.
+  * HTTP response header `Content-Type` tells the browser how to interpret the body of the response. For example, if `Content-Type` is set to `text/html`, the body will be interpreted as HTML and the browser will parse the HTML to render it in the viewport.
+  * The character set, or `charset`, is often included as a value for the `Content-Type` header.
+
+**Example**
+
+```
+Content-Type: text/html; charset=UTF-8
+```
+
+  * Other text media types include:
+    * `text/plain` for plain text responses
+    * `text/css` for css stylesheets
+    * `text/javascript`for JavaScript files
+  * There are also many non-text media types for things like image files, PDF documents, sound files, ZIP files, etc.
+  * Wikipedia has [a list](https://en.wikipedia.org/wiki/Media_type#List_of_common_media_types) of commonly used media types.
+
+### Data Serialization Formats
+
+  * Since APIs are generally used to allow systems to communicate by passing structured data between each other, the content of requests need to use a format and media type that can represent hierarchical data. These formats are known as data serialization formats
+  * A **data serialization format** describes a way to represent data in a form that can be more easily or efficiently stored or transferred
+  * **XML**, or **extensible markup language** is one such format. It was commonly used by APIs in the past, and is still used by some today.
+  * **JSON** or **JavaScript Object Notation** is perhaps the most popular data serialization format used by web APIs today. The syntax used by JSON is based on the way object literals are written in JavaScript, the main difference being that the property or key names are strings.
+
+### Fetching Resources
+
+  * In API terms, a **resource** is the representation of some grouping of data. For example, a blogging API might have resources like posts and comments.
+  * Every resource in a web API must have a unique path that can be used to identify and access it. A single resource is often referred to as a **element**
+  * To fetch a resource, you issue a `GET` request to url which indicates the location of the resource
+
+**Example**
+
+For a JSON API, the body of a reponse to fetching a single resource might look like this:
+
+```
+{
+  "id": 1,
+  "name": "Karl Lingiah",
+  "username": "superchilled"
+}
+```
+
+  * APIs can also be used to fetch a group of resources. Groups of resources are usually referred to as **collections**. The collection is returned in an array-like structure contaning the individual elements.
+
+**Example**
+
+For a JSON API, the body of a reponse to fetching a group of resources might look like this:
+
+```
+[
+  {
+    "id": 1,
+    "name": "Karl Lingiah",
+    "username": "superchilled"
+  },
+  {
+    "id": 2,
+    "name": "Keri Silver",
+    "username": "ksilver"
+  },
+  {
+    "id": 3,
+    "name": "Peter Parker",
+    "username": "Spiderman"
+  }
+]
+```
+
+  * When deserialized in a programming environment, the collection will be an array containing three objects.
+
+  * As a rule of thumb:
+    * If a url or path ends with pluralised word like `/users` or `/products`, then this is for a collection, and the response body will contain multiple elements
+    * If a url or path ends with a plural word followed by a slash and an identifier, e.g. `/users/1`, `/products/3`, then this is likely to be for a single element
+
+### Creating Resources
+
+  * As well as fetching resources, APIs often allow you to create new resources.
+  * Rather than a `GET` request, you issue a `POST` request to the url for where the resource should be created
+  * The API will require some data about the new resource in order to create it. This data is often the result of a form submission, and is passed in the request body.
+  * A response for a `POST` request will often have a status of `201 Created` is the request was successful
+
+### Updating Resources
+
+  * Existing resources can also be updated. Rather than create a brand new resource, you can update the value for a particular key, or create a brand new key-value pair.
+  * The `PUT` http method is used rather than `POST` for updating resources
+  * For updating a resource you need to use a path that indicates a specific resource, e.g. `/products/1`
+  * According to the HTTP specification, `PUT` requests require a complete representation of the resource being updated. This means that every key value pair should be specified, even for those that are not having their value changed. If a key-value pair is not specified, then the value for that key *should*, strictly speaking, be set to `null`.
+  * Most APIs don't strictly follow this requirement, however, anmd only modify parameters which are specified in the request. This is technically the behaviour of the `PATCH` http method, but most APIs still use `PUT`.
+
+### Deleting Resources
+
+  * As well as fetching, creating, and updating resources, you can also delete them.
+  * Deleting resources is carried out using the `DELETE` http method.
+  * As with updating, the path should indicate a specific resource to delete.
+  * The `204 No Content` status code is often used to respond to `DELETE` requests. This code is generally used when it doesn't make sense to return anything in the response body. When deleting a resource, there is nothing really to return, so `204 No Content` makes sense in this context.
+
+### HTTP Accept Header
+
+  * Some request headers are particularly important when working with Web APIs. One of these is the `Accept` header. This specifies what media types the client will acccept in a response to the request.
+    * An `Accept` value of `application/json` means that the client will expect, and treat, any response body as JSON.
+    * An `Accept` value of `*/*` means that the client will accept any media type as a reponse.
+
+### HTTP Response Headers
+
+  * Some common response headers that are used by Web APIs are:
+    * `Access-Control-Allow-Origin`. This lists the domains that can access a resource using CORS.
+    * `Allow`. Indicates which http methods are allowed to be used on a resource. Used with a `405 Method Not Allowed` response to a request with an invalid http method.
+    * `Content-Length`. The length of the response body in bytes.
+    * `Content-Type`. Describes the media type or format of the response body.
+    * `ETag`. Used to identify a specific version of a resource for APIs that support this. Example: `ETag: "6df23dc03f9b54cc"`. The value returned in this header can be sent with future requests to the same url in the `If-None-Match` request header. If the resource hasn't changed in the meantime, the response should be a `304 Not Modified` status. If it has changed, the response should include the entire updated resource, and its new `ETag`. This is used to avoid fetching and processing data that has not been updated since last time it was accessed.
+    * `Last-Modified`. The value should be a date-time value indicating the last time the requested resource was modified. This date and time can be included in future requests to the same url in the `If-Modified-Since` header. If the resource hasn't changed in the meantime, the response should be a `304 Not Modified` status. If it has changed, the response should include the entire updated resource, and a new value for `Last-Modified`. This is used to avoid fetching and processing data that has not been updated since last time it was accessed.
+    * `WWW-Authenticate`. Indicates the type of authentication required to access a resource. Example: `WWW-Authenticate: Basic`.
+    * `X-*` Headers. Giving header names that begin with `X-` is a convention used with non-standard headers. These headers are often API or application-specific. For example, GitHub uses some `X-*` headers to control rate limiting: `X-RateLimit-Limit: 60`, `X-RateLimit-Remaining: 57`, `X-RateLimit-Reset: 1413592144`
+
+### Common Errors
+
+  * HTTP requests don't always complete successfully.
+  * A failure can be due to things like:
+    * A request being incomplete or containing an invalid value
+    * A problem on the server
+    * A network connection issue
+  * Sometimes errors result in no more information than a status code
+    * A status code like `422 Unprocessable Entity` can indicate a validation issue (e.g. missing parameters) with the data that was passed to the API. This mostly occurs when creating or updating a resource.
+    * Depending on the API, the response body will sometimes contain additional information about the error, such as which data failed validation.
+  * Another common error is trying to access a resource that doesn't exist. This will usually result in a `404 Not Found` status. This could be the result of the resource actually not existing, an incorrect url, or an authenticaton issue (authentication issues might sometimes use `401` or `403` error codes, but for security reasons an API might not want to expose the existence of a resource to someone not authorised to access it)
+  * Another cause of errors is sending data in the wrong format for teh expected media type
+  * Rate limiting can also be an issue. Many APIs limit the number of requests a user can make within a specified time-period. The status code for this kind of issue varies, but is often `403 Forbidden`.
+  * Server errors will generally result in an error code in the `5xx` range. Resolving server errors from the client end isn't usually possible, as you would need access to the server to do so.
 
 <a name="network-programming-js"></a>
 ## Network Programing in JavaScript
