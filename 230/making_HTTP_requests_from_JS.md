@@ -198,8 +198,83 @@ For a JSON API, the body of a reponse to fetching a group of resources might loo
 <a name="network-programming-js"></a>
 ## Network Programing in JavaScript
 
+  * The HTTP request-response cycle is the foundation of web applications
+  * The standard client-server interaction via request response has been that the client (i.e. browser) requests and entire html page at once from the server and then renders that page in the viewport.
+  * The process looks somewhat like this:
+    1. User clicks a link in a web page
+    2. Browser sends http `GET` request to server
+    3. Server returns html for **entire page**
+    4. Browser parsers and displays the page
+  * A couple of things to note:
+    * When a user clicks a link, the browser automatically issues a `GET` request
+    * When the browser receives the http response, it automatically parses it and displays it in the viewport
+
+  * As web applications became more interactive, the need to reload the entire page becomes a limiting factor.
+  * Developers started using techniques to work around this and only reload part of the page
+  * The method for doing this known as **AJAX**: Asynchronous JavaScript And XML. This technique fetches data, typically HTML or XML, and updates *parts* of a page rather performing a full page load.
+  * This process typically looks something like this:
+    1. User action triggers an event listener
+    2. JavaScript event handler send http request to server using `XMLHttpRequest`
+    3. Server returns some data (typically a 'chunk' of HTML)
+    4. JavaScript callback manipulates the DOM to insert the HTML chunk into the page.
+  * A couple of things to note:
+    * The web browser doesn't make an automatic http request, instead this request is initiated using JavaScript (typically via an event handler)
+    * When the response is received, JavaScript uses the response body to update the page as needed rather than an entire page load occurring
+
+### Single Page Applications
+
+  * In front-end development, it has become increasingly common to make HTTP requests outside of the main HTML page load.
+  * Some modern web applications fetch data in a serialized format (often JSON) and create the DOM entirely using JavaScript running in the client browser. These applications are usually referred to as **Single Page Applications** since they often run entirely within a single HTML 'page' (i.e. there are no 'page loads' required after the intial one).
+
 <a name="making-requests-XHR"></a>
 ## Making Requests with XMLHttpRequest
+
+  * We can use the `XMLHttpRequest` object and its methods to manage HTTP requests in JavaScript.
+  * This object is part of the browser API rather than the JavaScript language.
+  * To send a request using `XMLHttpRequest`, we must provide the same parameters as usual: method, host, and path (with optional headers and body)
+
+**Example**
+
+```
+var myRequest = new XMLHttpRequest(); // instantiates XMLHttpRequest object
+request.open('GET', '/somepath'); // sets the http method and URL on the XMLHttpRequest object
+request.send(); // sends the request
+```
+
+  * Once the request completes, we can check the values of certain properties of the request object (prior to completion the values for these properties is `null`)
+
+**Example**
+
+```
+request.responseText;                       // body of response, typically some HTML or JSON
+request.status;                             // status code of response, e.g. 200
+request.statusText;                         // status text from response, e.g. OK
+
+request.getResponseHeader('Content-Type');  // value for the `Content-Type` response header
+```
+
+  * The `send()` method of `XMLHttpRequest` is *asynchronous*, so code execution continues without waiting for it to complete.
+  * The `XMLHttpRequest` object uses event listeners to send notifications when the request completes and provides access to the response returned by the server or other remote system.
+
+**Example**
+
+```
+request.addEventListener('load', function(event) {
+  var request = event.target; // the event passed to the callback function has a
+                              // target property pointing to the XMLHttpRequest object
+  // rest of callback code here
+});
+```
+
+  * In the above example, an event listener is added to the request object so that the callback is only executed when the `load` event for that request occurs.
+
+### XMLHttpRequest Methods
+
+  *
+
+### XMLHttpRequest Properties
+
+
 
 <a name="XHR-Events"></a>
 ## XMLHttpRequest Events
