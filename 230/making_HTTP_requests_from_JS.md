@@ -270,20 +270,137 @@ request.addEventListener('load', function(event) {
 
 ### XMLHttpRequest Methods
 
-  *
+  * The following methods can be called on an `XMLHttpRequest` object:
+    * `open(method, url)`: opens a connection to `url` using `method`
+    * `send(data)`: sends the request, optionally sending `data`
+    * `setRequestHeader(header, value)`: sets an http header specified by `header` to the value specified by `value` for the `XMLHttpRequest` object
+    * `abort()`: cancels and active request
+    * `getResponseHeader(header)`: returns the response's value for a header specified by `header`
 
 ### XMLHttpRequest Properties
 
+  * The following properties, among others, exist on `XMLHttpRequest` objects:
+    * `timeout`: a writable property that sets the maximum time (in milliseconds) that a request can take to complete
+    * `readyState`: a read-only property that indicats what state the request is in
+    * `responseText`: a read-only property whose value is the raw text of the response body. Defaults to `null`
+    * `response`: a read-only property whose value is the *parsed* content of the response. Defaults to `null`
 
+### Debugging in Chrome
+
+  * When debugging code that uses `XMLHttpRequest` in Chrome Dev Tools, it is useful to check the `Log XMLHttpRequests` option under Settings > Preferences
+  * Checking this option means that you can see when a request completes in the JavaScript console
 
 <a name="XHR-Events"></a>
 ## XMLHttpRequest Events
 
+  * Two main events fire during an `XMLHttpRequest` cycle:
+    * `loadstart`: this fires when the request is sent to the server
+    * `loadend`: this fires when the response has loaded and all other events have fired. It is the last `XMLHttpRequest` event to fire.
+  * Before `loadend` triggers, another event will fire based on whether the request succeeeded or not:
+    * `load`: fires when a complete response has loaded
+    * `abort`: fires when the request was interrupted before it could complete
+    * `error`: fires when an error occured with the request
+    * `timeout`: fires when a response wasn't received before the timeout preiod ended
+  * One thing to note is that the browser considers a request to be successful as long as it receives a complete response, even if that response has a non-200 status code. `XMLHttpRequest` does not consider the actual status of the response in determining a successful outcome. It is the responsibility of the application code to determine whether a request was 'successful' in status terms by examining the response within a `load` event handler.
+  * A couple of other useful `XMLHttpRequest` events are:
+    * `readstatechange`: fires when the `readyState` attribute of a document has changed.
+    * `progress`: fires to indicate that an operation is in progress.
+
 <a name="data-serialization"></a>
 ## Data Serialization
 
+  * JavaScript applications that run in a browser must *serialize* data when communicating with remote systems (e.g. APIs). This lets the client and server transfer data in a specified format that can be understood by both.
+  * Many applications use query strings and url encoding as a form of data Serialization.
+    * A query string consists of one or more `name=value` pairs delimited by the `&` character.
+    * Non-alphanumeric characters must be encoded before being passed in a query string, e.g. spaces are encoded as either `%20` or `+`
+    * JavaScript provides a built-in function `encodeURIComponent` that lets you encode a name or value using this format.
+    * Once you have a properly encoded string, you can append it to a `GET` request's path
+    * URL encoding also works with `POST` requests, but you must include the `Content-Type` header with a value of `application/x-www-form-urlencoded`, also the encoded name-value string is placed in the request body rather than appended to the url.
+  * `POST` requests use multipart form formats for forms that include file uploads or that use `FormData` objects to collect data.
+    * This isn't strictly an encoding format since nothing is really 'encoded', instead each name-value pair is placed in its own separate section of the request body, and a special boundary delimiter, specified as a value of the `Content-Type` request header, is used to separate each 'part'. The final delimiter ends with `--` to mark the end of the multipart content
+
+**Example**
+
+```
+POST /path HTTP/1.1
+Host: example.test
+Content-Length: 267
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundarywDbHM6i57QWyAWro
+Accept: */*
+
+------WebKitFormBoundarywDbHM6i57QWyAWro
+Content-Disposition: form-data; name="title"
+
+Do Androids Dream of Electric Sheep?
+------WebKitFormBoundarywDbHM6i57QWyAWro
+Content-Disposition: form-data; name="year"
+
+1968
+------WebKitFormBoundarywDbHM6i57QWyAWro--
+```
+
+  * JSON (JavaScript Object Notation) is a popular data serialization format used by APIs.
+    * JSON doesn't provide native support for complex data types like dates and times, instead you must represent such values as strings.
+    * A `GET` request can return JSON, but you must use `POST` to send JSON to the server, using a `Content-Type` header of `application/json`, and an optional `charset` (though it is best practice to include it)
+
+**Example**
+
+```
+POST /path HTTP/1.1
+Host: example.test
+Content-Length: 62
+Content-Type: application/json; charset=utf-8
+Accept: */*
+
+{"title":"Do Androids Dream of Electric Sheep?","year":"1968"}
+```
+
 <a name="usage-examples"></a>
 ## Usage Examples
+
+### Loading HTML via XHR
+
+  * We can have an HTML element like a `<div>`, and instead of having markup already in that div, we can populate the div using data that we fetch using JavaScript and `XMLHttpRequest`
+
+**Example**
+
+```
+<h1>My cool shop!</h>
+
+<div id='products'></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var request = new XMLHttpRequest();
+  request.open('GET', 'https://mycoolshop.com/api/products');
+  request.send();
+
+  request.addEventListener('load', function(event) {
+    var productsDiv = document.getElementById('products');
+    productsDiv.innerHTML = request.response;
+  });
+});
+</script>
+```
+
+### Submitting a Form via XHR
+
+  * There are three steps to submitting a form using JavaScript:
+    1. Serialize the form data
+    2. Send the request using `XMLHttpRequest`
+    3. Handle the response
+
+**Example**
+
+```
+var request = new XMLHttpRequest();
+
+```
+
+### Loading JSON via XHR
+
+
+### Sending JSON via XHR
 
 <a name="cross-domain-xhr-cors"></a>
 ## Cross-Domain XMLHttpRequest with CORS
