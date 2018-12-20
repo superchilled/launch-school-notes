@@ -360,7 +360,7 @@ Accept: */*
 
 ### Loading HTML via XHR
 
-  * We can have an HTML element like a `<div>`, and instead of having markup already in that div, we can populate the div using data that we fetch using JavaScript and `XMLHttpRequest`
+  * We can have an HTML element like a `<div>`, and instead of having markup already in that div, we can populate the div using html markup that we fetch using JavaScript and `XMLHttpRequest`
 
 **Example**
 
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   request.addEventListener('load', function(event) {
     var productsDiv = document.getElementById('products');
-    productsDiv.innerHTML = request.response;
+    productsDiv.innerHTML = request.response; // the response here will be html
   });
 });
 </script>
@@ -394,13 +394,126 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ```
 var request = new XMLHttpRequest();
+request.open('POST', 'https://mytodoapp.com/todos');
+request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+var data = 'task=buy%20milk&date=22-12-2018'
+
+request.send(data);
+```
+
+  * In the above example, since this is a post request, we set the `Content-Type` request header to `application/x-www-form-urlencoded` in order to indicate that we are passing data in a urlencoded format.
+  * Additionally we pass an argument (the encoded data) to the `send` method in order for that data to be included in the request body.
+
+  * When working with HTML forms, we can use the DOM object `HTMLFormElement`. This has a property called `elements`, which returns a collection of all the form controls contained within the `<form>`.
+  * This can be used in conjunction with an event listener that fires when a user submits the form. We can iterate through the form elements and serialize the data in order for it to be sent in a request.
+
+**Example**
 
 ```
+var form = document.getElementById('form');
+
+form.addEventListener('submit', function(event) {
+  // prevent the browser from submitting the form
+  event.preventDefault();
+
+  // access the inputs using form.elements and serialize into a string
+  var keysAndValues = [];
+
+  for (var i = 0; i < form.elements.length; i++) {
+    var element = form.elements[i];
+    var key;
+    var value;
+
+    if (element.type !== 'submit') {
+      key = encodeURIComponent(element.name);
+      value = encodeURIComponent(element.value);
+      keysAndValues.push(key + '=' + value);
+    }
+  }
+
+  var data = keysAndValues.join('&');
+
+  // code to submit the data
+
+});
+```
+
+  * A process like the example above is laborious and can be error-prone. Modern browsers provide a built-in API to help with this process: `FormData`.
+
+**Example**
+
+```
+var form = document.getElementById('form');
+
+form.addEventListener('submit', function(event) {
+  // prevent the browser from submitting the form
+  event.preventDefault();
+
+  var data = new FormData(form);
+
+  // code to submit the data
+});
+```
+
+  * Using `FormData` makes serializing the form's data much simpler.
+  * One thing to note about `FormData` is that is uses the *multipart* data serialization format. This is the same serialization format used for file inputs in web forms. Since `FormData` can handle file uploads, it makes sense for it to default to this format.
 
 ### Loading JSON via XHR
 
+  * Retrieving HTML chunks or fragments from a server and inserting them into an existing webpage works well for applications that primarily sue server-side rendering to generate the user interface.
+  * Sometimes it makes more sense to load data in a primitive data structure (e.g. JSON) and render it with client-side code.
+  * Modern browser make this process a bit easier by providing native support for fetching JSON data. To do this we can take advantage of the `responseType` property of `XMLHttpRequest` to tell the browser how to handle the data that it receives in the response (i.e. the response body).
+
+**Example**
+
+```
+var request = new XMLHttpRequest();
+request.open('GET', 'https://api.github.com/repos/rails/rails');
+request.responseType = 'json';
+
+request.addEventListener('load', function(event) {
+  // request.response will be the result of parsing the JSON response body
+  // or null if the body couldn't be parsed or another error occurred
+
+  var data = request.response;
+});
+
+request.send();
+```
+
+  * Setting the `responseType` to `json` means we don't require an additional step of parsing the response as JSON using `JSON.parse()`. A benefit of doing this means that there is less potential for error in our code (for example if `JSON.parse()` is unable to parse the response as JSON), or at least we have to do less error checking.
 
 ### Sending JSON via XHR
 
+  * Sending JSON data to the server is similar to submitting a form, in that the steps to do so are similar:
+    1. Serialize the form data **into valid JSON**
+    2. Send the request using `XMLHttpRequest` with a `Content-Type: application/json` header
+    3. Handle the response
+
+**Example**
+
+```
+var request = new XMLHttpRequest();
+request.open('POST', 'https://mytodoapp.com/todos');
+request.setRequestHeader("Content-Type", "application/json");
+
+var data = { task: 'buy milk', date: '22-12-2018' };
+var json = JSON.stringify(data);
+
+request.send(json);
+```
+
+  * The difference between this and sending non-JSON data is the way that the data is first defined as a JSON object and then coverted to a String using the `JSON.stringify` method.
+  * The other difference is the value set for the `Content-Type` request header.
+
 <a name="cross-domain-xhr-cors"></a>
 ## Cross-Domain XMLHttpRequest with CORS
+
+  * The combination of a URL's *scheme*, *hostname*, and *port* define the resource's **origin**.
+  * A *cross-origin request* occurs when the page tries to access a resource from a different origin.
+  * For example, if we are at the following url: `http://mywebsite.com/page1`, then requests to the folowing resources would be considered cross-origin requests:
+    * `https://mywebsite.com/page2`: this has a different *scheme* (`https` instead of `http`)
+    * `http://mywebsite.com:4000/page1`: this has a differnt *port number* (`4000` instead of the default `80`)
+    * `http://anotherwebsite.com/page1`: this has a different *host* (`anotherwebsite` instead of `mywebsite`)
+  * Cross-origin requests, in particular cross-domain requests, have security vulnerabilities that can be exploited to launch attacks such as XSS and CSFR attacks.
