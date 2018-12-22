@@ -510,6 +510,8 @@ request.send(json);
 <a name="cross-domain-xhr-cors"></a>
 ## Cross-Domain XMLHttpRequest with CORS
 
+### Cross-Origin Requests
+
   * The combination of a URL's *scheme*, *hostname*, and *port* define the resource's **origin**.
   * A *cross-origin request* occurs when the page tries to access a resource from a different origin.
   * For example, if we are at the following url: `http://mywebsite.com/page1`, then requests to the folowing resources would be considered cross-origin requests:
@@ -517,3 +519,23 @@ request.send(json);
     * `http://mywebsite.com:4000/page1`: this has a differnt *port number* (`4000` instead of the default `80`)
     * `http://anotherwebsite.com/page1`: this has a different *host* (`anotherwebsite` instead of `mywebsite`)
   * Cross-origin requests, in particular cross-domain requests, have security vulnerabilities that can be exploited to launch attacks such as XSS and CSFR attacks.
+
+### Cross-Origin Requests with XHR
+
+  * By default, and `XHR` object can't send **cross-origin** requests.
+    * All browsers implement a security feature called the 'same-origin policy'. It prevents `XMLHttpRequest` from making cross-domain requests.
+  * To get around the 'same-origin policy', APIs that are made available for public consumption use the 'Cross-Origin Resource Sharing' (CORS) mechanism. This allows cross-origin access to resources.
+
+### CORS
+
+  * Cross-Origin Resource Sharing is a W3C specification that defines how the browser and server must communicate when accessing resources across different origins.
+  * Applications use custom HTTP request and response header to implement the mechanism.
+    * According to the specification, every `XMLHttpRequest` sent by the browser must have an `Origin` header.
+    * The server uses the `Origin` header sent by the browser to determine whether it should send a corresponding header in response.
+    * The browser automatically adds the `Origin` header to an `XHR` request.
+    * When the server receives the request, it cheks the `Origin` header and determines if it came from and origin that is allowed to see the response.
+      * If a response is allowed, the server send the response with a `Access-Control-Allow-Origin` header that contains the same origin.
+      * If the server wants to make a resource available to everyone, it can send the same header with a vlaue of `*`.
+      * When the browser sees the `Access-Control-Allow-Origin` header, it checks to see if the value contains the correct origin or `*`. If it does, the browser makes the response avaialble to the application, otherwise it raises an error.
+      * If the server sends a response *without* the `Access-Control-Allow-Origin` header, the browser will raise an error and not let the script access the response.
+  * The Cross-Origin Resource Sharing (CORS) specification fulfills the need forlegitimate Cross-Origin requests. It gives a standard way to access resources from different origins without the security problems associatedwith cross-origin requests.
