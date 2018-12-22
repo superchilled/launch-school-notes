@@ -1,5 +1,6 @@
 # Making HTTP Requests from JavaScript
 
+  * [Overview](#overview)
   * [Web APIs](#web-apis)
   * [Network Programing in JavaScript](#network-programming-js)
   * [Making Requests with XMLHttpRequest](#making-requests-XHR)
@@ -7,6 +8,16 @@
   * [Data Serialization](#data-serialization)
   * [Usage Examples](#usage-examples)
   * [Cross-Domain XMLHttpRequest with CORS](#cross-domain-xhr-cors)
+
+<a name="overview"></a>
+## Overview
+
+  * AJAX is a technique used to exchange data between a browser and web server without requiring a complete page reload
+  * Modern browsers provide an API called `XMLHttpRequest` (or `XHR`) to send AJAX requests
+  * Some modern web applications rely *exclusively* on JavaScript and `XHR` to communicate with the server and use the responses to build and manipulate the DOM. They are known as *single-page application* (SPAs)
+
+  * Sending requests through `XMLHttpRequest` mainly involves the following steps:
+    *
 
 <a name="web-apis"></a>
 ## Web APIs
