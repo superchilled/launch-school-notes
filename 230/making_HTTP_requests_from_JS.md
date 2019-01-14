@@ -17,7 +17,33 @@
   * Some modern web applications rely *exclusively* on JavaScript and `XHR` to communicate with the server and use the responses to build and manipulate the DOM. They are known as *single-page application* (SPAs)
 
   * Sending requests through `XMLHttpRequest` mainly involves the following steps:
-    *
+    * Create a new `XMLHttpRequest` object
+    * Use the `open` method of `XMLHttpRequest` on the XHR object to specify the method and URL for the request
+    * Use the `setRequestHeader` method on the XHR object to set any headers you'd like to send with the request (many headers are added automatically by the browser)
+    * Use the `send` method on the XHR object to send the request to the server. With a `POST` request we can use the optional `body` parameter to pass serialized data as part of the request
+    * Attach an event handler for the `load` event to the XHR object to handle the response
+    * Attach an event handler for the `error` event to the XHR object to handle any connection errors (this is not required but it's good practice)
+
+  * XHR objects send asynchronous requests by default. The rest of the code can continue to execute without waiting for the request to complete.
+  * Some important properties on an XHR object are:
+    * `responseText`
+    * `response`
+    * `status`
+    * `statusText`
+  * If data is sent along with a XHR request, it must be serialized into a widely supported format
+    * Three request serialization formats in widespread use are:
+      * query string/ url encoding
+      * multi-part form data
+      * JSON
+    * It is good practice to send the `Content-Type` header along with the XHR. This helps the server parse the request data
+  * Three popular response data formats are:
+    * HTML
+    * JSON
+    * XML
+  * The single most popular serialization format currently in use is JSON
+  * A useful property on an XHR object is `responseType`. It is particularly useful when the response is expected to be JSON. When the value of this header is set to `json`, the XHR objects response property provides parsed JSON.
+  * A major constraint on XHR is the browsers' Same-Origin Policy. This limits communication to only the same domain, port, and protocol (i.e. the same 'origin'). Attempt to communicate across this origin results in a securty error
+    * The standard solution for resolving cross-origin restrictions is a W3C specification called Cross-Origin Resource Sharing (CORS). CORS recommends using an `Origin` header on the request, and an `Access-Control-Allow-Origin` header on the response for cross-origin communications.
 
 <a name="web-apis"></a>
 ## Web APIs
