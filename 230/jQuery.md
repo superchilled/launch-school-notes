@@ -170,6 +170,56 @@ $lis.css('background-color', 'red'); // changes the background-color of all list
 <a name="events"></a>
 ## jQuery Events
 
+  * Most JavaScript and jQuery code executes when a user interacts with a site.
+  * The most common way to respond to user actions is to bind events with an event listener and then handle them when the event occurs
+  * An event listener is a function that gets executed when a particular event occurs.
+  * jQuery uses the `$.on()` method to bind event listeners to jQuery objects.
+
+**Example**
+
+```
+$(function() {
+  $('a').on('click', function() {
+    // do something when link is clicked
+  });
+});
+```
+
+  * In the above example, the `$('a')` call returns all the `a` elements on the page. The `on()` then binds an event handler to those elements which responds when one of them is 'clicked'. The body of the callback function can be defined to do something as a result of the click.
+  * We can pass the `event` object to the callback function as an argument. The event can then be referenced within the calback.
+
+**Example**
+
+```
+$('a').on('click', function(event) {
+  event.preventDefault();
+});
+```
+
+  * In the above example we are calling `preventDefault()` on the event in order to prevent the link from executing its default behaviour. We can also use `stopPropogation()` here to stop the event from bubbling further.
+
+### Convenience Methods
+
+  * jQuery has convenience methods for many events. These methods have the same name as the event types, take a callback function as an argument, and allow for less verbose code.
+
+**Example**
+
+```
+$('a').click(function(e) {
+  e.preventDefault();
+  // rest of callback code
+});
+
+$('form').submit(function(e) {
+  e.preventDefault();
+  // rest of callback code
+});
+```
+
+### Further Reading
+
+  * This [Medium article](https://medium.com/@sak1986/event-binding-in-jquery-daf902be7c58) provides some more detail on what happens when you bind an event using jQuery.
+
 <a name="dom-traversal"></a>
 ## jQuery DOM Traversal
 
