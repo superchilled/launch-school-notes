@@ -411,3 +411,47 @@ $.fx.off = true;
 
 <a name="html-data-attributes"></a>
 ## HTML Data Attributes
+
+  * There will often be situations where you want to use a specific identifier in the HTML to interact with an element using JavaScript or jQuery. A common use case for this is a tabbed UI where you need to identify which link animates which tab.
+  * You might often see the `id` attribute used to achieve this, but this isn't really the purpose of the `id` attribute.
+  * With HTML5 came the ability to create custom data attributes. These attributes can be added to any HTML element and bear no significance other than to store a 'data value' which can then be leveraged when interacting with the DOM.
+  * Data attributes start with the `data-` prefix and need at least one charater after the hyphen. Other than that, what comes after the hyphen can be anything you want that can be contained within a string.
+
+**Example**
+
+```
+<ul>
+  <li><a href="#" data-block="gold">Gold Sponsors</a></li>
+  <li><a href="#" data-block="silver">Silver Sponsors</a></li>
+  <li><a href="#" data-block="bronze">Bronze Sponsors</a></li>
+</ul>
+
+<article data-block="gold">
+  <h1>Gold Sponsors</h1>
+</article>
+
+<article data-block="silver">
+  <h1>Silver Sponsors</h1>
+</article>
+
+<article data-block="bronze">
+  <h1>Bronze Sponsors</h1>
+</article>
+```
+
+  * The above example shows markup and data attributes that you might use to create a tabbed interface.
+
+  * There's no limit to the number of data attributes that can be added to a single element.
+
+### Data Attributes and jQuery
+
+  * There are two different jQuery methods you can use to read the value of a data attribute, `attr` and `data`.
+  * The `attr` method allows you to specify an attribute name, and gets the value of the attribute for the first element which matches.
+
+**Example**
+
+```
+$a.attr('data-block'); // gold
+```
+
+### Data Attributes and DOM APIs
