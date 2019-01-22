@@ -4,6 +4,8 @@
   * [jQuery Events](#events)
   * [jQuery DOM Traversal](#dom-traversal)
   * [Chrome Debugging Tools](#chrome-debugging-tools)
+  * [jQuery Animations](#jquery-animations)
+  * [HTML Data Attributes](html-data-attributes)
 
 <a name="overview"></a>
 ## jQuery Overview
@@ -223,5 +225,189 @@ $('form').submit(function(e) {
 <a name="dom-traversal"></a>
 ## jQuery DOM Traversal
 
+  * Traversing the DOM is one of the most common actions taken using jQuery.
+  * jQuery has a number of useful methods to help with DOM Traversal
+
+### `find`
+
+  * The `find` method searches the descendant elements of the element on which it is called and filters all the descendants based on an argument passed to it (usually a selector)
+  * It is similar to the `children` method, except that `children` only travels down a single level in the DOM tree whereas `find` will traverse all levels.
+  * [API Reference](https://api.jquery.com/find/)
+
+**Example**
+
+```
+$('body').find('li');
+```
+
+  * The above example finds all list items in the body of the web page.
+
+### `parent`
+
+  * The `parent` method gets the parent of each element in the set it is called on. Optionally filtered by a selector
+  * [API Reference](https://api.jquery.com/parent/)
+
+**Example**
+
+```
+$('body').find('li').parent();
+```
+
+  * The above example would find the immediate parent of the all the list items in the body of the web page
+
+### `closest`
+
+  * The `closest` method finds the first ancestor element that matches the filter (usually a selector)
+  * [API Reference](https://api.jquery.com/closest/)
+
+**Example**
+
+```
+$('p').closest('div');
+```
+
+  * The above example finds the first `<div>` element that is an ancestor of each `<p>` element on the page.
+
+### Other Useful Traversal Methods
+
+  * `nextAll` selects all the sibling elements that follow the element on which it is called, optionally filtering on a selector. [API Reference](https://api.jquery.com/nextAll/)
+  * `prevAll` is similar to `nextAll` but in the opposite direction; i.e. it selects all sibling elements *before* the element it was called on, optionally filtering on a selector. [API Reference](https://api.jquery.com/prevAll/)
+  * `siblings` gets *all* the siblings (both before and after) the element on which it is called, optionally filtering on a selector. [API Reference](https://api.jquery.com/siblings/)
+  * There are also a number of other traversal mehtods listed in the [jQuery API reference](http://api.jquery.com/category/traversing/)
+
 <a name="chrome-debugging-tools"></a>
 ## Chrome Debugging Tools for Front-End Development
+
+  * Chrome DevTools can be used for debugging purposes when developing in the front-end, or with jQuery. Other browsers provide similar tools.
+  * The various features available are listed in the [Chrome DevTools User Guide](https://developers.google.com/web/tools/chrome-devtools/)
+
+<a name="jquery-animations"></a>
+## jQuery Animations
+
+  * As well as taking care of cross-browser support for DOM methods and managing events, jQuery also provides a well-organised and succinct way of animating CSS properties, using effects to fade-in, slide-out, and toggle elements, among other things.
+  * These animations methods are convenience methods that wrap other jQuery code so that we don't have to write an animation function each time.
+  * These methods are listed in the Effects section of the [jQuery API documentation](http://api.jquery.com/category/effects/)
+  * These methods generally all work in the same way: you can call them on an element, either with or without arguments (which can be used to provide additional information about the required animation) and jQuery will handle the required changing of the relevant CSS properties using an animation loop.
+
+**Example**
+
+```
+var $p = $('p');
+$p.fadeOut();
+```
+
+  * The above example will fade out all the paragraph elements on the page.
+  * Methods can take a callback function which is executed when the animation completes.
+
+**Example**
+
+```
+$p.fadeIn(250, function() {
+  $(this).addClass('visible');
+});
+```
+
+  * Methods accept arguments either positionally or as an options object.
+
+**Example**
+
+```
+$p.slideToggle(400, 'linear', function() {
+  console.log('Sliding complete!');
+});
+
+$p.slideToggle({
+  duration: 400,
+  easing: 'linear',
+  complete: function() {
+    console.log('Sliding complete!');
+  }
+});
+```
+
+  * As well as the specific convenience methods, jQuery also has a general-purpose `animate` method.
+  * This method takes an object of the css properties to animate, and then either positional arguments fro duration and callback, or a second object with these arguments as options.
+
+**Example**
+
+```
+$p.animate({
+  left: 500,
+  top: 250
+}, 400, function() {
+  $(this).text('All done!');
+});
+
+$p.animate({
+  left: 500,
+  top: 250
+}, {
+  duration: 1000,
+  complete: function() {
+    $(this).text('All done!');
+  }
+});
+```
+
+  * Most CSS properties can be animated using the `animate` method, though complex properties like colours cannot.
+  * All properties that use a measurement unit use pixels by default unless a different units (e.g. `em`, `%`) is specified.
+
+### Chaining and Delaying Animations
+
+  * If you chain jQuery animation methods together, they will run sequentially. That is to say, the first animation in the chain will complete before the next one starts, and so on.
+
+**Example**
+
+```
+$p.slideUp(250).fadeIn();
+```
+
+  * You can also add a delay before an animation or between chained animations using the `delay` method
+
+**Example**
+
+```
+$p.slideUp(250).delay(500).slideDown(250);
+```
+
+### Stopping Animations
+
+  * There's a couple of ways of stopping animations.
+  * Sometimes you want to stop all current animations before running a new one. Here you can use the `stop` method before the animation method call. [jQuery API documentation](https://api.jquery.com/stop/)
+
+**Example**
+
+```
+$p.stop().fadeToggle(200);
+```
+
+  * The above example will stop the *current* running animation on the `$p` element.
+  * The `stop` method takes two optional boolean arguments, both of which default to `false`. The first, if set to `true` will remove all queued animations as well as stopping the current one. The second argument, if set to `true` will jump to the end of the frame of the current animation (rather than stoppig it where it currently is).
+
+  * Another way of stopping animations is the `finish` method.
+  * This method stops the currently currently-running animation, removes all queued animations, and jumps to the last frame for all queued animations. It's the equivalent of calling `stop(true, true)` on all the queued animations. [jQuery API documentation](https://api.jquery.com/finish/)
+
+**Example**
+
+```
+// Element will immediately be visible and will be in position 50, 50
+
+$p.fadeIn(200).animate({
+  left: 50,
+  top: 50
+}).finish();
+```
+
+### Disabling Animations
+
+  * There may be situations where you want to disable all animations completely. For example, you may be testing or debugging some other part of the application functionality and having the animations running is gettig in the way or making that more difficult.
+  * You can turn off effects globally by setting `$.fx.off` to `true`. [jQuery API documentation](https://api.jquery.com/jquery.fx.off/]
+
+**Example**
+
+```
+$.fx.off = true;
+```
+
+<a name="html-data-attributes"></a>
+## HTML Data Attributes
