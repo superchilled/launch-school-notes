@@ -446,12 +446,145 @@ $.fx.off = true;
 ### Data Attributes and jQuery
 
   * There are two different jQuery methods you can use to read the value of a data attribute, `attr` and `data`.
-  * The `attr` method allows you to specify an attribute name, and gets the value of the attribute for the first element which matches.
+
+#### `attr`
+
+  * To use the `attr` method as a getter, you to specify an attribute name and it gets the value of the attribute for the first element which matches.
 
 **Example**
 
 ```
-$a.attr('data-block'); // gold
+
+$('a').attr('data-block'); // gold
 ```
 
+  * The `attr` method also works as a setter. You can either change the value of an existing data attribute (or *any* attribute on an element), or you can add a *new* attribute; the method signature is the same for both.
+
+**Example**
+
+```
+$('a').first().attr('data-block', 'blue'); // update existing attribute
+$('a').first().attr('data-color', 'red'); // set new attribute
+```
+
+  * NOTE: when used as a *setter*, the `attr` method affects **all** matched elements, not just the first one.
+
+**Example**
+
+```
+$('a').attr('data-foo', 'blue'); // sets attribute on ALL 'a' elements
+```
+
+    * [jQuery API documentation](https://api.jquery.com/attr/)
+
+#### `data`
+
+  * At first glance, the `data` method might seem to work in the same way at `attr`. You can use it as a getter to obtain the value of an existing data attribute by referencing the attribute name without the prepended `data-` part.
+
+**Example**
+
+```
+$('a').data('block'); // gold
+```
+
+  * When used as a *setter* however, it doesn't *appear* to do anything; i.e. the HTML markup in the DOM is not updated
+
+**Example**
+
+```
+$('a').first().data('block', 'red');
+```
+
+```
+<ul>
+  <li><a href="#" data-block="gold">Gold Sponsors</a></li> <!-- this is still gold -->
+  <li><a href="#" data-block="silver">Silver Sponsors</a></li>
+  <li><a href="#" data-block="bronze">Bronze Sponsors</a></li>
+</ul>
+```
+
+  * But if we now try to *get* the value for that data attribute using the `data` method, we get the 'new' value.
+
+**Example**
+
+```
+$('a').first().data('block'); // red
+```
+
+  * This might seem odd until you realise that there are two sets of data values being stored on the DOM element. One is the 'visible' data attribute seen the DOM HTML markup. The other is a data store that exists on the DOM node, but is not 'visible' in the HTML. It is this data store that the `data` method is intended to interact with, and it should generally be used only for this purpose.
+  * As a general rule:
+    * Use `attr` to interact with data attributes on DOM HTML elements in a way that updates the HTML markup.
+    * Use `data` to set and get custom data stored on a DOM node.
+
+  * [jQuery API documentation](https://api.jquery.com/data/)
+
 ### Data Attributes and DOM APIs
+
+  * You can also work with data attributes using native DOM APIs, just be aware that older versions of Internet Explorer don't behave according to the specification, so to ensure complete cross-browser support it can be easier to use jQuery
+  * In order to use the DOM API to interact with data attributes, we can use a DOM element property called `dataset`. This property  is a specialized object of key value pairs that, when set, changes the data attributes on the corresponding HTML element in the DOM (this works much like jQuery's `attr` method).
+
+**Example**
+
+  * Say we have markup like the following:
+
+```
+<div id="gold" data-block="gold">
+  <h1>Gold Sponsors</h1>
+</div>
+```
+
+  * We can get the element using its `id` and store it in a variable:
+
+```
+var gold = document.getElementById('gold');
+```
+
+  * We can then interact with the element's data attributes using `dataset`:
+
+```
+gold.dataset.block = 'silver';
+```
+
+  * In the above example, `dataset` represents a key-value store of the data attributes on the `div` element, with the suffix of the `data-` attribute acting as the key. The example is therefore changing the value of the `block` value from `'gold'` to `'silver'`.
+
+  * `dataset` can also be used to add new data attributes
+
+```
+gold.dataset.bar = 'baz';
+```
+
+  * This produces the following changes to the HTML in the DOM:
+
+```
+<div id="gold" data-block="gold" data-bar="baz">
+  <h1>Gold Sponsors</h1>
+</div>
+```
+
+  * or delete existing ones:
+
+```
+delete gold.dataset.block;
+```
+
+  * This produces the following changes to the HTML in the DOM:
+
+```
+<div id="gold" data-bar="baz">
+  <h1>Gold Sponsors</h1>
+</div>
+```
+
+  * An important thing to note is that when converting HTML attributes to DOM properties, if the attribute contains a hyphen it is camel-cased:
+
+**Example**
+
+```
+<div data-date-of-birth="28-02-1981"></div>
+```
+
+  * The DOM dataset property would be converted to:
+
+```
+div.dataset.dateOfBirth;
+```
