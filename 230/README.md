@@ -42,9 +42,9 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * Cross-Domain XMLHttpRequest with CORS
 
   * [jQuery](jQuery.md)
-    *
+    * 
 
-
+  * [HTML Templating with JavaScript](html_templating_with_JS.md)
 
   * [New JavaScript Features](new_JS_features.md)
     *
