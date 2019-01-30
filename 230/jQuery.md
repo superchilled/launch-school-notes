@@ -2,10 +2,13 @@
 
   * [jQuery Overview](#overview)
   * [jQuery Events](#events)
+    * [jQuery Event Delegation](#event-delegation)
+    * [jQuery Event Convenience Methods](#convenience-methods)
   * [jQuery DOM Traversal](#dom-traversal)
   * [Chrome Debugging Tools](#chrome-debugging-tools)
   * [jQuery Animations](#jquery-animations)
   * [HTML Data Attributes](html-data-attributes)
+  * [AJAX Requests with jQuery](#jQuery-AJAX)
 
 <a name="overview"></a>
 ## jQuery Overview
@@ -200,7 +203,48 @@ $('a').on('click', function(event) {
 
   * In the above example we are calling `preventDefault()` on the event in order to prevent the link from executing its default behaviour. We can also use `stopPropogation()` here to stop the event from bubbling further.
 
-### Convenience Methods
+<a name="event-delegation"></a>
+### jQuery Event Delegation
+
+  * When you have an event handler that is being bound to a large number of elements that all exist within the same container, it's more efficeint to delegate the event handling to a common parent than to bind it to each element individually.
+  * For example, if you had an unordered list of 30 list items each containing a link, binding an event to each `<li>` or each `<a>` within each `<li>` would mean creating 30 separate event listeners. If you instead bind the event listener to the parent `<ul>`, you just need to create one event listener to handle events for *all* the list items.
+
+**Example**
+
+Given the following markup:
+
+```
+<ul>
+  <li>
+    <p>Bananas</p>
+    <a href="#">Remove</a>
+  </li>
+  <!-- 29 more list items, each with a remove anchor -->
+</ul>
+```
+
+instead of doing the following (which binds the callback to each anchor):
+
+```
+$('a').on('click', function(e) {
+  e.preventDefault();
+  $(this).closest('li').remove();
+});
+```
+
+we can bind the callback to a single element, the 'ul' element:
+
+```
+$('ul').on('click', 'a', function(e) {
+  e.preventDefault();
+  $(e.target).closest('li').remove();
+});
+```
+
+  * The jQuery learning site goes into more detail on [jQuery Event Delegation](https://learn.jquery.com/events/event-delegation/)
+
+<a name="convenience-methods"></a>
+### jQuery Event Convenience Methods
 
   * jQuery has convenience methods for many events. These methods have the same name as the event types, take a callback function as an argument, and allow for less verbose code.
 
@@ -525,7 +569,7 @@ $('a').first().data('block'); // red
 
 **Example**
 
-  * Say we have markup like the following:
+Say we have markup like the following:
 
 ```
 <div id="gold" data-block="gold">
@@ -533,27 +577,27 @@ $('a').first().data('block'); // red
 </div>
 ```
 
-  * We can get the element using its `id` and store it in a variable:
+We can get the element using its `id` and store it in a variable:
 
 ```
 var gold = document.getElementById('gold');
 ```
 
-  * We can then interact with the element's data attributes using `dataset`:
+We can then interact with the element's data attributes using `dataset`:
 
 ```
 gold.dataset.block = 'silver';
 ```
 
-  * In the above example, `dataset` represents a key-value store of the data attributes on the `div` element, with the suffix of the `data-` attribute acting as the key. The example is therefore changing the value of the `block` value from `'gold'` to `'silver'`.
+In the above example, `dataset` represents a key-value store of the data attributes on the `div` element, with the suffix of the `data-` attribute acting as the key. The example is therefore changing the value of the `block` value from `'gold'` to `'silver'`.
 
-  * `dataset` can also be used to add new data attributes
+`dataset` can also be used to add new data attributes
 
 ```
 gold.dataset.bar = 'baz';
 ```
 
-  * This produces the following changes to the HTML in the DOM:
+This produces the following changes to the HTML in the DOM:
 
 ```
 <div id="gold" data-block="gold" data-bar="baz">
@@ -561,13 +605,13 @@ gold.dataset.bar = 'baz';
 </div>
 ```
 
-  * or delete existing ones:
+or delete existing ones:
 
 ```
 delete gold.dataset.block;
 ```
 
-  * This produces the following changes to the HTML in the DOM:
+This produces the following changes to the HTML in the DOM:
 
 ```
 <div id="gold" data-bar="baz">
@@ -583,8 +627,11 @@ delete gold.dataset.block;
 <div data-date-of-birth="28-02-1981"></div>
 ```
 
-  * The DOM dataset property would be converted to:
+he DOM dataset property would be converted to:
 
 ```
 div.dataset.dateOfBirth;
 ```
+
+<a name="jQuery-AJAX"></a>
+## AJAX Requests with jQuery
