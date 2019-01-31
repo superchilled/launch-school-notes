@@ -635,3 +635,68 @@ div.dataset.dateOfBirth;
 
 <a name="jQuery-AJAX"></a>
 ## AJAX Requests with jQuery
+
+  * Modern browsers provide an API called `XMLHttpRequest` (or `XHR`) to send AJAX requests.
+  * Unfortunately there can sometimes be difficulties in working with this native API cross-browser due to differences in implementation between browsers
+  * jQuery has a set of methods for working with AJAX requests which take care of cross-browser differences for you.
+  * jQuery offers a full-featured method called `$.ajax()` ([docs](https://api.jquery.com/jQuery.Ajax/)), which provides everything you need to perform an asynchronous HTTP request.
+  * jQuery also has a number of convenience methods such as `$.get()`, `$.post()`, `$.getScript()`, which perform specific AJAX-related functions.
+
+### The `$.ajax()` Method
+
+  * The `$.ajax()` takes as an argument a configuration obeject that contains all the instructions that jQuery requires to complete the request. The configuration object can contain many options; some of the main ones are:
+    * `url`: the url for the request
+    * `type`: the type of request, e.g. `GET`, `POST`, etc.. (defaults to `GET`)
+    * `data`: the data to be sent to the server
+    * `dataType`: the type of data being sent
+    * `fail`, `done`, `always`: callbacks to run in the event of failure, success, or when the request completes either way.
+    * `async`: defaults to `true`. Request is sent synchronously (in a way that blocks execution) if set to `false`.
+
+**Example**
+
+```
+$.ajax({
+    // The URL for the request
+    url: "post.php",
+    // The data to send (will be converted to a query string)
+    data: {
+        id: 123
+    },
+    // Whether this is a POST or GET request
+    type: "GET",
+    // The type of data we expect back
+    dataType : "json",
+}).done(function( json ) {
+    // Code to run if the request succeeds (is done);
+    // The response is passed to the function
+     $( "<h1>" ).text( json.title ).appendTo( "body" );
+     $( "<div class=\"content\">").html( json.html ).appendTo( "body" );
+  }).fail(function( xhr, status, errorThrown ) {
+    // Code to run if the request fails; the raw request and
+    // status codes are passed to the function
+    alert( "Sorry, there was a problem!" );
+    console.log( "Error: " + errorThrown );
+    console.log( "Status: " + status );
+    console.dir( xhr );
+  }).always(function( xhr, status ) {
+    // Code to run regardless of success or failure;
+    alert( "The request is complete!" );
+  });
+```
+
+### AJAX-related Convenience Methods
+
+  * jQuery also provides a number of convenience methods, which are essentially wrappers around the `$.ajax()` methods. They don't provide the same configurability as `$.ajax()`, but may be useful in specific situations. These methods include
+    * `$.get()`: performs a `GET` request to the provided url
+    * `$.post()`: performs a `POST` request to the provided url
+    * `$.getScript()`: adds a script to the page
+    * `$.getJSON()`: performs a `GET` request and expects JSON data to be returned.
+  * These convenience methods mostly take the folowing arguments (in order):
+    * `url`: the url for the request (required)
+    * `data`: the data to be sent to the server (optional)
+    * success callback: a callback function run if the request succeeds
+    * `dataType`: the type of data being sent
+
+### Further Reading
+
+  * More information about making AJAX requests with jQuery is available on the [jQuery learning site](https://learn.jquery.com/ajax/).
