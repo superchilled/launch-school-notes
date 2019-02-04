@@ -4,7 +4,6 @@
   * [A Hierarchy of Nodes](#node-hierarchy)
   * [Node Properties](#node_properties)
   * [Determining Node Type](#node-type)
-  * [Documentation](#documentation)
   * [Node Traversal](#node-traversal)
   * [Element Attributes](#element-attributes)
   * [Finding DOM Nodes](#finding-nodes)

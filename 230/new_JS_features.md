@@ -4,7 +4,6 @@
   * [Build Tools](#build-tools)
   * [Babel Guide to ES2015](#guide-to-es2015)
   * [Let and Const](#let-const)
-  * [Arrow Functions](#arrow-functions)
   * [Promises](#promises)
 
 <a name="js-versions"></a>

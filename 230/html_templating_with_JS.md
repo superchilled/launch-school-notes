@@ -1,5 +1,11 @@
 # HTML Templating with JavaScript
 
+  * [Templating Overview](#overview)
+  * [Handlebars Basics](#handlebars)
+
+<a name="overview"></a>
+## Templating Overview
+
   * A basic way of manipulating HTML content on a web-page using JavaScript, would be to create a string and the  add it to the DOM.
   * If we wanted to include data in the HTML content, we could use string concatenation.
 
@@ -28,6 +34,7 @@ mainSection.appendChild(para);
     * [Underscore](https://underscorejs.org/#template) is a much more fully-featured library JavaScript which proivides templating among other things. Its templating allows you to write JavaScript in your templates
     * [Handlebars](http://handlebarsjs.com/) sits somewhere in-between. It keeps JavaScript out of the template, but provides syntax which allows you to add logic, such as conditional logic.
 
+<a name="handlebars"></a>
 ### Handlebars Basics
 
   * Handlebars doesn't have any other dependencies, such as jQuery or an MVC framework, so can be used on its own just by including the source in your HTML document

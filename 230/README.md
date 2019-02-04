@@ -11,7 +11,6 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * A Hierarchy of Nodes
     * Node Properties
     * Determining Node Type
-    * Documentation
     * Node Traversal
     * Element Attributes
     * Finding DOM Nodes
@@ -42,9 +41,23 @@ Notes for [Launch School](https://launchschool.com/) Course 230
     * Cross-Domain XMLHttpRequest with CORS
 
   * [jQuery](jQuery.md)
-    * 
+    * jQuery Overview
+    * jQuery Events
+      * jQuery Event Delegation
+      * jQuery Event Convenience Methods
+    * jQuery DOM Traversal
+    * Chrome Debugging Tools
+    * jQuery Animations
+    * HTML Data Attributes
+    * AJAX Requests with jQuery
 
   * [HTML Templating with JavaScript](html_templating_with_JS.md)
+    * Templating Overview
+    * Handlebars Basics
 
   * [New JavaScript Features](new_JS_features.md)
-    *
+    * JavaScript Versions
+    * Build Tools
+    * Babel Guide to ES2015
+    * Let and Const
+    * Promises
